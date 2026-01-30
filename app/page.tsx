@@ -1,13 +1,14 @@
-import { Button } from "@/components/ui/button"
-
-export default function Page() {
-  const name="abc"
+import Link from "next/link";
+import {Button } from "@/components/ui/button"
+export default function Home() {
   return (
-    <>
-    <h1>Hello, Next.js!</h1>
-    <Button >Click me</Button>
-    </>
-  )
+    <div>
+      <h1>Welcome!</h1>
+      <Link href="/blog">
+      <Button>
+        Go to Blog
+        </Button>
+        </Link>
+    </div>
+  );
 }
-  
- 
