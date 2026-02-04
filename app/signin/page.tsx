@@ -30,7 +30,7 @@ export default function SignIn() {
         setError("");
       }, 1000);
     } else {
-      router.push("/dashboard");
+      router.push("/dashboard/Category");
     }
   };
   return (
@@ -64,16 +64,16 @@ export default function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
             />
             <CardDescription className="flex items-center justify-between text-sm  text-black mt-3" >
-                <label className="flex items-center gap-2 font-semibold">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 accent-black cursor-pointer "
-                  />
-                  Keep me Signed in
-                </label>
-                <p className="text-[#71717A]  font-sans">
-                  Forgot password?
-                </p>
+              <label className="flex items-center gap-2 font-semibold">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 accent-black cursor-pointer "
+                />
+                Keep me Signed in
+              </label>
+              <p className="text-[#71717A]  font-sans">
+                Forgot password?
+              </p>
             </CardDescription>
           </CardContent>
           <CardFooter className="flex flex-col gap-2 mt-5">
@@ -81,9 +81,9 @@ export default function SignIn() {
               Sign in
             </Button>
             <CardDescription className="flex items-center justify-between text-sm  text-black mt-3" >
-                <p className="text-[#71717A]  font-sans">
-                  Don't have an account? <span className="text-black">Sign up</span>
-                </p>
+              <p className="text-[#71717A]  font-sans">
+                {"Don't have an account?"}<span className="text-black">Sign up</span>
+              </p>
             </CardDescription>
             {error && (
               <p className="text-red-500 text-center text-sm">{error}</p>
