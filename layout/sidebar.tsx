@@ -19,7 +19,7 @@ export default function Sidebar() {
 
         <nav className="space-y-3">
           <Link
-            href="#"
+            href="/dashboard/Category"
             className="flex items-center gap-2 rounded px-3 py-2 hover:bg-gray-100 font-medium"
           >
             <img src={Home.src} />
@@ -28,7 +28,7 @@ export default function Sidebar() {
 
 
           <Link
-            href="#"
+            href="/dashboard/article"
             className="flex items-center gap-2 rounded px-3 py-2 hover:bg-gray-100 font-medium"
           >
             <img src={Shopping.src} />
@@ -37,7 +37,7 @@ export default function Sidebar() {
 
 
           <Link
-            href="#"
+            href="/dashboard/Category"
             className="flex items-center gap-2 rounded px-3 py-2 hover:bg-gray-100 font-medium"
           >
             <img src={Mail.src} />

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import upload from "@/public/Upload.svg";
 
-export default function CreateCategoryDialog({ onCreate }: any) {
+export default function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [title, setTitle] = useState("");
