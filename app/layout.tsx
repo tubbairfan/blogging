@@ -1,6 +1,5 @@
 import Providers from "./provider";
 import Sidebar from "@/layout/sidebar";
-// import Footer from "@/layout/Footer";
 import "./globals.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Sidebar />
             <main className="flex-1 flex flex-col">
               {children}
-              {/* <Footer /> */}
+             
             </main>
           </div>
         </Providers>

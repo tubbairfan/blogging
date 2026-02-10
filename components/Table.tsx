@@ -81,8 +81,8 @@ export default function CategoryTable({ categories, visibleColumns }: CategoryTa
                   </span>
                 </TableCell>
               )}
-              {isVisible("slug") && <TableCell className="text-sm">{cat.slug || "-"}</TableCell>}
-              {isVisible("articles") && <TableCell className="text-sm">{cat.articles || 0}</TableCell>}
+              {isVisible("slug") && <TableCell className="text-sm">{cat.slug}</TableCell>}
+              {isVisible("articles") && <TableCell className="text-sm">{cat.articles}</TableCell>}
               {isVisible("actions") && (
                 <TableCell className="text-right">
                   <DropdownMenu>

@@ -8,23 +8,27 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav className="text-sm font-medium text-gray-600 flex items-center space-x-2">
-      {items.map((item, index) => (
-        <span key={index} className="flex items-center">
-          {item.href ? (
-            <Link href={item.href} className="hover:underline text-gray-700">
-              {item.label}
-            </Link>
-          ) : (
-            <span className="text-gray-500">{item.label}</span>
-          )}
+   <nav
+  className="
+    text-sm font-medium text-[#71717A] flex items-center space-x-2
+    ml-14  md:ml-16 lg:ml-0 "
+>
+  {items.map((item, index) => (
+    <span key={index} className="flex items-center">
+      {item.href ? (
+        <Link href={item.href} className="hover:underline text-gray-700">
+          {item.label}
+        </Link>
+      ) : (
+        <span className="text-[#71717A]">{item.label}</span>
+      )}
 
-         
-          {index < items.length - 1 && (
-            <img src={ChevronRight.src} className="ml-2"/>
-          )}
-        </span>
-      ))}
-    </nav>
+      {index < items.length - 1 && (
+        <img src={ChevronRight.src} className="ml-2" />
+      )}
+    </span>
+  ))}
+</nav>
+
   );
 }
