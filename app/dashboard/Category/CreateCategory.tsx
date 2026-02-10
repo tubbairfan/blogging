@@ -28,7 +28,7 @@ export default function CreateCategoryDialog() {
     }
   };
 
- 
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -72,7 +72,9 @@ export default function CreateCategoryDialog() {
             />
           </label>
 
-          <label className="font-semibold">Title</label>
+          <label className="font-semibold">
+            Title <span className="text-[#DC2626]">*</span>
+          </label>
           <Input
             placeholder="e.g. Web Development"
             className="mt-1"
@@ -80,21 +82,25 @@ export default function CreateCategoryDialog() {
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <label className="font-semibold">Description</label>
+          <label className="font-semibold">
+            Description <span className="text-[#DC2626]">*</span>
+          </label>
           <Textarea
             placeholder="Brief Description of this category.."
-            className="mt-1"
+            className="mt-1 mb-0"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          <label className="text-[#71717A]">0/150 characters</label>
         </div>
+
 
         <DialogFooter className="mt-4">
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" className="rounded-sm">Cancel</Button>
           </DialogClose>
 
-          <Button >Create Category</Button>
+          <Button  className="rounded-sm" >Create Category</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -19,7 +19,7 @@ export default function CreateArticlePage() {
     <div className="flex-1 px-2 py-5 min-h-screen md:px-5 ">
   <Breadcrumb
     items={[
-      { label: "Dashboard", href: "/dashboard/Category" },
+      { label: "Dashboard", href: "/dashboard/category" },
       { label: "Articles", href: "/dashboard/article" },
       { label: "Create Article" },
     ]}
