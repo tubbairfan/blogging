@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createCategory } from "@/services/Category.services/category";
 import { Button } from "@/components/ui/button";
 import CirclePlus from "@/public/CirclePlus.svg";
 import {
@@ -13,21 +15,50 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import upload from "@/public/Upload.svg";
+import type { AxiosError } from "axios";
+// import upload from "@/public/Upload.svg";
 
 export default function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // const [imageFile, setImageFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+  const queryClient = useQueryClient();
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      setOpen(false);
+      setTitle("");
+      setDescription("");
+      // setImagePreview(null);
+      // setImageFile(null);
+    },
+    onError: (error: AxiosError<{ errors?: string[]; message?: string }>) => {
+      console.error("CREATE CATEGORY ERROR:", error.response?.data || error.message);
+    },
+  });
+
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setImagePreview(URL.createObjectURL(file));
+  //     setImageFile(file);
+  //   }
+  // };
+
+  const handleSubmit = () => {
+    const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
+    if (!trimmedTitle || !trimmedDescription) return;
+
+    const payload = { title: trimmedTitle, description: trimmedDescription, status: "DRAFT" };
+    mutate(payload);
+
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,6 +80,7 @@ export default function CreateCategoryDialog() {
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Image section commented out temporarily
           <label className="block font-semibold">
             Image
             <div className="mt-2 border border-dashed rounded-sm h-40 flex items-center justify-center cursor-pointer overflow-hidden">
@@ -71,6 +103,7 @@ export default function CreateCategoryDialog() {
               onChange={handleImageChange}
             />
           </label>
+          */}
 
           <label className="font-semibold">
             Title <span className="text-[#DC2626]">*</span>
@@ -91,16 +124,25 @@ export default function CreateCategoryDialog() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <label className="text-[#71717A]">0/150 characters</label>
+          <label className="text-[#71717A]">
+            {description.length}/150 characters
+          </label>
         </div>
-
 
         <DialogFooter className="mt-4">
           <DialogClose asChild>
-            <Button variant="outline" className="rounded-sm">Cancel</Button>
+            <Button variant="outline" className="rounded-sm">
+              Cancel
+            </Button>
           </DialogClose>
 
-          <Button  className="rounded-sm" >Create Category</Button>
+          <Button
+            className="rounded-sm"
+            onClick={handleSubmit}
+            disabled={isPending}
+          >
+            {isPending ? "Creating..." : "Create Category"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

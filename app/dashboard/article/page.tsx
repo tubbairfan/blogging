@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
-import ArticleClient from "./ArticleClient";
+import ArticleClient from "./displayArticle";
 
 export default function CategoryPage() {
   const session =  getServerSession(authOptions);

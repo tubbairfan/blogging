@@ -27,7 +27,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -59,6 +59,14 @@ const Tiptap = ({
     },
     immediatelyRender: false,
   });
+
+  useEffect(() => {
+    if (!editor) return;
+    const nextContent = content ?? "";
+    if (editor.getHTML() !== nextContent) {
+      editor.commands.setContent(nextContent, false);
+    }
+  }, [editor, content]);
 
   return (
     <div className="bg-background relative rounded-lg border shadow-sm">
