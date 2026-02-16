@@ -64,7 +64,7 @@ const Tiptap = ({
     if (!editor) return;
     const nextContent = content ?? "";
     if (editor.getHTML() !== nextContent) {
-      editor.commands.setContent(nextContent, false);
+      editor.commands.setContent(nextContent, { emitUpdate: false });
     }
   }, [editor, content]);
 
