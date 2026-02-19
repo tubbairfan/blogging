@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCategory } from "@/services/Category.services/category";
 import { Button } from "@/components/ui/button";
@@ -15,17 +15,29 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { AxiosError } from "axios";
-// import upload from "@/public/Upload.svg";
+import upload from "@/public/Upload.svg";
 
 export default function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
-  // const [imagePreview, setImagePreview] = useState<string | null>(null);
-  // const [imageFile, setImageFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [titleError, setTitleError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
   const queryClient = useQueryClient();
+
+  const imagePreview = useMemo(
+    () => (imageFile ? URL.createObjectURL(imageFile) : null),
+    [imageFile]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: createCategory,
@@ -34,34 +46,45 @@ export default function CreateCategoryDialog() {
       setOpen(false);
       setTitle("");
       setDescription("");
-      // setImagePreview(null);
-      // setImageFile(null);
-    },
-    onError: (error: AxiosError<{ errors?: string[]; message?: string }>) => {
-      console.error("CREATE CATEGORY ERROR:", error.response?.data || error.message);
+      setImageFile(null);
+      setTitleError("");
+      setDescriptionError("");
     },
   });
-
-  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     setImagePreview(URL.createObjectURL(file));
-  //     setImageFile(file);
-  //   }
-  // };
 
   const handleSubmit = () => {
     const trimmedTitle = title.trim();
     const trimmedDescription = description.trim();
-    if (!trimmedTitle || !trimmedDescription) return;
 
-    const payload = { title: trimmedTitle, description: trimmedDescription, status: "DRAFT" };
-    mutate(payload);
+    if (!trimmedTitle || !trimmedDescription) {
+      setTitleError(!trimmedTitle ? "Title is required" : "");
+      setDescriptionError(!trimmedDescription ? "Description is required" : "");
+      return;
+    }
+    if (trimmedDescription.length > 150) {
+      setDescriptionError("Max 150 characters");
+      return;
+    }
 
+    mutate({
+      title: trimmedTitle,
+      description: trimmedDescription,
+      status: "DRAFT",
+      ...(imageFile ? { image: imageFile } : {}),
+    });
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+          setTitleError("");
+          setDescriptionError("");
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="sm" className="flex items-center gap-2">
           <img src={CirclePlus.src} className="h-4 w-4" />
@@ -80,15 +103,11 @@ export default function CreateCategoryDialog() {
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Image section commented out temporarily
-          <label className="block font-semibold">
+          <label className="block font-semibold" htmlFor="create-category-image">
             Image
             <div className="mt-2 border border-dashed rounded-sm h-40 flex items-center justify-center cursor-pointer overflow-hidden">
               {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  className="h-full w-full object-cover"
-                />
+                <img src={imagePreview} alt="Category preview" className="h-full w-full object-cover" />
               ) : (
                 <span className="text-sm text-gray-500">
                   <img src={upload.src} className="mx-auto mb-2" />
@@ -97,13 +116,13 @@ export default function CreateCategoryDialog() {
               )}
             </div>
             <input
+              id="create-category-image"
               type="file"
               hidden
               accept="image/*"
-              onChange={handleImageChange}
+              onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
             />
           </label>
-          */}
 
           <label className="font-semibold">
             Title <span className="text-[#DC2626]">*</span>
@@ -112,8 +131,14 @@ export default function CreateCategoryDialog() {
             placeholder="e.g. Web Development"
             className="mt-1"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (titleError) setTitleError("");
+            }}
           />
+          {titleError && (
+            <p className="text-sm text-red-600">{titleError}</p>
+          )}
 
           <label className="font-semibold">
             Description <span className="text-[#DC2626]">*</span>
@@ -122,8 +147,14 @@ export default function CreateCategoryDialog() {
             placeholder="Brief Description of this category.."
             className="mt-1 mb-0"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              if (descriptionError) setDescriptionError("");
+            }}
           />
+          {descriptionError && (
+            <p className="text-sm text-red-600">{descriptionError}</p>
+          )}
           <label className="text-[#71717A]">
             {description.length}/150 characters
           </label>

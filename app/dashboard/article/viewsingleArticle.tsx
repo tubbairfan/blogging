@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toUiStatus } from "./types";
 
 type ViewArticleDialogProps = {
   open: boolean;
@@ -49,6 +48,9 @@ export default function ViewArticleDialog({
           <p className="text-sm text-red-600">Failed to load article.</p>
         ) : data ? (
           <div className="space-y-3 text-sm">
+            {data.image ? (
+              <img src={data.image} alt={data.name || "Article image"} className="w-full max-h-48 object-cover rounded" />
+            ) : null}
             <p>
               <span className="font-semibold">Name:</span> {data.name}
             </p>
@@ -56,7 +58,7 @@ export default function ViewArticleDialog({
               <span className="font-semibold">Description:</span> {stripHtml(data.description)}
             </p>
             <p>
-              <span className="font-semibold">Status:</span> {toUiStatus(data.status)}
+              <span className="font-semibold">Status:</span> {data.status}
             </p>
             <p>
               <span className="font-semibold">Category:</span> {data.category?.title || ""}

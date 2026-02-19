@@ -40,7 +40,16 @@ export default function CategoryTable({
     {
       key: "image",
       label: "",
-      render: (row: Category) => <img src={row.image} />,
+      render: (row: Category) => (
+        <img
+          src={row.image || "/Cell.svg"}
+          alt={row.title || "Category image"}
+          className="h-14 w-14 min-w-14 rounded-sm object-cover"
+          onError={(e) => {
+            e.currentTarget.src = "/Cell.svg";
+          }}
+        />
+      ),
     },
     {
       key: "title",
@@ -60,7 +69,7 @@ export default function CategoryTable({
       render: (row: Category) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium inline-block
-          ${row.status === "Active" ? "border border-[#E4E4E7] bg-transparent" : "bg-[#F4F4F5]"}`}
+          ${row.status === "ACTIVE" ? "border border-[#E4E4E7] bg-transparent" : "bg-[#F4F4F5]"}`}
         >
           {row.status}
         </span>
@@ -87,7 +96,7 @@ export default function CategoryTable({
             <DropdownMenuItem className="flex items-center gap-2" onClick={() => onPublish(row.id)}>
               <img src={CircleCheck.src} className="h-4 w-4" /> Publish
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2" onClick={() => onDelete(row.id)}>
+            <DropdownMenuItem className="flex items-center gap-2" onSelect={() => onDelete(row.id)}>
               <img src={vector.src} className="h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -104,5 +113,9 @@ export default function CategoryTable({
     return <p className="mt-6 text-sm text-red-600">Failed to load categories: {errorMessage || "Unknown error"}</p>;
   }
 
-  return <ReusableTable data={data} columns={columns} />;
+  return (
+    <div className="w-full overflow-x-auto">
+      <ReusableTable data={data} columns={columns} />
+    </div>
+  );
 }

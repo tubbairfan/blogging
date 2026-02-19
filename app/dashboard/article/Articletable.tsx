@@ -38,10 +38,19 @@ export default function ArticleTable({
 }: ArticleTableProps) {
   const columns: Column<Article>[] = [
     {
-      key: "image",
-      label: "",
-      render: (row: Article) => <img src={row.image} />,
-    },
+         key: "image",
+         label: "",
+         render: (row: Article) => (
+           <img
+             src={row.image || "/Cell.svg"}
+             alt={row.title || "article image"}
+             className="h-14 w-14 min-w-14 rounded-sm object-cover"
+             onError={(e) => {
+               e.currentTarget.src = "/Cell.svg";
+             }}
+           />
+         ),
+       },
     {
       key: "title",
       label: "Article Name",
@@ -58,7 +67,7 @@ export default function ArticleTable({
       render: (row: Article) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium inline-block
-          ${row.status === "Active" ? "border border-[#E4E4E7] bg-transparent" : "bg-[#F4F4F5]"}`}
+          ${row.status === "ACTIVE" ? "border border-[#E4E4E7] bg-transparent" : "bg-[#F4F4F5]"}`}
         >
           {row.status}
         </span>
@@ -100,10 +109,8 @@ export default function ArticleTable({
   if (isLoading) {
     return <p className="mt-6 text-sm text-[#71717A]">Loading articles...</p>;
   }
-
   if (isError) {
     return <p className="mt-6 text-sm text-red-600">Failed to load articles: {errorMessage || "Unknown error"}</p>;
   }
-
   return <ReusableTable data={data} columns={columns} />;
 }

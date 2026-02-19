@@ -10,10 +10,16 @@ import setting2 from "@/public/Settings2.svg";
 import CreateCategoryDialog from "./CreateCategory";
 import CategoryTable from "./CategoryTable";
 import EditCategoryDialog from "./editCategory";
-import ViewCategoryDialog from "./viewCategory";
+import ViewCategoryDialog from "./viewsingleCategory";
 import { deleteCategory, getCategories, updateCategory } from "@/services/Category.services/category";
-import { toUiStatus } from "./types";
-import type { Category } from "./types";
+import type { Category, CategoryStatus } from "./types";
+import { toast } from "react-toastify";
+import Pagination from "@/components/Pagination";
+
+type DeleteCategoryErrorResponse = {
+  requiresConfirmation?: boolean;
+  message?: string;
+};
 
 export default function CategoryClient() {
   const [activeTab, setActiveTab] = useState("ALL");
@@ -37,19 +43,61 @@ export default function CategoryClient() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteCategory,
+    mutationFn: ({ id, force }: { id: number; force?: boolean }) => deleteCategory(id, force),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 
-  const tableData: Category[] = categories.map(
-    (cat: Omit<Category, "image" | "status"> & { status?: string }) => ({
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteMutation.mutateAsync({ id });
+      toast.success("Category deleted successfully");
+    } catch (err: unknown) {
+      const responseData = (err as { response?: { data?: DeleteCategoryErrorResponse } })?.response?.data;
+      const requiresConfirmation = responseData?.requiresConfirmation;
+      const message = responseData?.message;
+
+      if (!requiresConfirmation) {
+        toast.error(message);
+        return;
+      }
+      toast.warning(
+        <div className="flex flex-col">
+          <span>{message}</span>
+          <div className="mt-2 flex gap-2 justify-end">
+            <button
+              className="px-2 py-1 bg-red-600 text-white rounded"
+              onClick={() => {
+                deleteMutation.mutateAsync({ id, force: true }).then(() => {
+                  toast.success("Category and related articles deleted");
+                });
+                toast.dismiss();
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="px-2 py-1 bg-gray-400 text-white rounded"
+              onClick={() => toast.dismiss()}
+            >
+              No
+            </button>
+          </div>
+        </div>,
+        { autoClose: false }
+      );
+    }
+  };
+
+  const tableData: Category[] = categories.map((cat) => {
+    const status: CategoryStatus = cat.status === "ACTIVE" ? "ACTIVE" : "DRAFT";
+    return {
       ...cat,
-      image: "/Cell.svg",
-      status: toUiStatus(cat.status),
-    })
-  );
+      image: cat.image || "/Cell.svg",
+      status,
+    };
+  });
 
   const filteredByTab =
     activeTab === "ALL"
@@ -60,6 +108,12 @@ export default function CategoryClient() {
     (cat) =>
       (cat.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (cat.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
+  const paginatedData = filteredCategories.slice(
+    (page - 1) * pageSize,
+    page * pageSize
   );
 
   return (
@@ -96,14 +150,20 @@ export default function CategoryClient() {
         </div>
 
         <CategoryTable
-          data={filteredCategories}
+          data={paginatedData}
           isLoading={isLoading}
           isError={isError}
           errorMessage={(error as Error)?.message}
           onView={(id) => setViewCategoryId(id)}
           onEdit={(id) => setEditCategoryId(id)}
           onPublish={(id) => publishMutation.mutate(id)}
-          onDelete={(id) => deleteMutation.mutate(id)}
+          onDelete={handleDelete}
+        />
+        <Pagination
+          totalItems={filteredCategories.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
         />
       </div>
 

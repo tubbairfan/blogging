@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toUiStatus } from "./types";
 
 type ViewCategoryDialogProps = {
   open: boolean;
@@ -43,6 +42,9 @@ export default function ViewCategoryDialog({
           <p className="text-sm text-red-600">Failed to load category.</p>
         ) : data ? (
           <div className="space-y-3 text-sm">
+            {data.image ? (
+              <img src={data.image} alt={data.title || "Category image"} className="w-full max-h-48 object-cover rounded" />
+            ) : null}
             <p>
               <span className="font-semibold">Title:</span> {data.title}
             </p>
@@ -50,7 +52,7 @@ export default function ViewCategoryDialog({
               <span className="font-semibold">Description:</span> {data.description}
             </p>
             <p>
-              <span className="font-semibold">Status:</span> {toUiStatus(data.status)}
+              <span className="font-semibold">Status:</span> {data.status}
             </p>
             <p>
               <span className="font-semibold">Slug:</span> {data.slug}

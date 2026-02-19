@@ -4,21 +4,37 @@ export type ArticlePayload = {
   name: string;
   description: string;
   categoryName: string;
-  status?: string;
+  status?: "ACTIVE" | "DRAFT";
+  image?: File;
 };
 
 type RawArticle = {
   id: number;
   name?: string;
   description?: string;
+  image?: string;
   status?: string;
   category?: {
     title?: string;
   };
 };
 
+const toFormData = (payload: Partial<ArticlePayload>) => {
+  const formData = new FormData();
+
+  if (payload.name !== undefined) formData.append("name", payload.name);
+  if (payload.description !== undefined) formData.append("description", payload.description);
+  if (payload.categoryName !== undefined) formData.append("categoryName", payload.categoryName);
+  if (payload.status !== undefined) formData.append("status", payload.status);
+  if (payload.image) formData.append("image", payload.image);
+
+  return formData;
+};
+
 export const createArticle = async (data: ArticlePayload) => {
-  const response = await API.post("/articles", data);
+  const response = await API.post("/articles", toFormData(data), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response.data;
 };
 
@@ -36,10 +52,10 @@ export const getArticles = async () => {
 
   return articles.map((article) => ({
     id: article.id,
-    image: "/Aspect Ratio.svg",
+    image: article.image || "/Cell.svg",
     title: article.name ?? "",
     description: stripHtml(article.description ?? ""),
-    status: (article.status || "DRAFT").toUpperCase() === "ACTIVE" ? "Active" : "Draft",
+    status: (article.status || "DRAFT").toUpperCase() === "ACTIVE" ? "ACTIVE" : "DRAFT",
     category: article.category?.title ?? "",
   }));
 };
@@ -50,7 +66,9 @@ export const getArticleById = async (id: number) => {
 };
 
 export const updateArticle = async (id: number, body: Partial<ArticlePayload>) => {
-  const { data } = await API.put(`/articles/${id}`, body);
+  const { data } = await API.put(`/articles/${id}`, toFormData(body), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return data;
 };
 
