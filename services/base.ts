@@ -4,7 +4,7 @@ import { clearStoredSession } from "@/lib/auth";
 export const AUTH_SESSION_EXPIRED_EVENT = "auth:session-expired";
 
 export const API = axios.create({
-  baseURL: "https://blogging-backend-eosin.vercel.app/api",
+  baseURL: "https://blogging-backend-28x5ab5ed-tubbas-projects.vercel.app/api",
   withCredentials: true,
 });
 
