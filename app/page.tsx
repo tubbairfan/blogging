@@ -1,9 +1,10 @@
-const page = () => {
+import SignIn from "./signin/page";
+export default  function CategoryPage() {
+
   return (
-    <div className="h-screen flex items-center justify-center">
-      <h1 className="text-3xl font-bold text-center">Welcome</h1>
+    <div className="min-h-screen flex items-center justify-center  border-gray-400 ">
+      <SignIn/>
+      
     </div>
   );
-};
-
-export default page;
+}

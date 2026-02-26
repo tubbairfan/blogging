@@ -2,21 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; 
+import { usePathname, useRouter } from "next/navigation";
 import Media from "../public/MediaAsset.svg";
 import Home from "../public/Home.svg";
 import Mail from "../public/Mail.svg";
 import Shopping from "../public/ShoppingBag.svg";
-import CollapselIcon from "../public/CollapseIcon.svg";
+import Settings2 from "../public/Settings2.svg";
+import { clearStoredSession, getStoredSession } from "@/lib/auth";
+import { logoutUser } from "@/services/User.services/user";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname(); 
+  const pathname = usePathname();
+  const router = useRouter();
+  const session = getStoredSession();
 
   const links = [
     { href: "/dashboard/", icon: Home, label: "Dashboard" },
     { href: "/dashboard/article", icon: Shopping, label: "Articles" },
     { href: "/dashboard/category", icon: Mail, label: "Categories" },
+    { href: "/dashboard/user", icon: Settings2, label: "Users" },
   ];
 
   return (
@@ -81,7 +86,7 @@ export default function Sidebar() {
         </div>
 
       
-        <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col gap-3  w-full">
           <div className="flex items-center gap-3">
             <img
               src={Media.src}
@@ -89,17 +94,29 @@ export default function Sidebar() {
               className="h-9 w-9 bg-black rounded-md"
             />
             <div className="flex flex-col">
-              <span className="font-semibold text-sm">schadcn</span>
-              <span className="text-sm">m@example.com</span>
+              <span className="font-semibold text-sm" suppressHydrationWarning>
+                {session?.username || "User"}
+              </span>
+              <span className="text-sm" suppressHydrationWarning>
+                {session?.email || "No email"}
+              </span>
             </div>
           </div>
 
-          <img
-            src={CollapselIcon.src}
-            alt="Collapse"
-            className="h-5 w-5 cursor-pointer"
-            onClick={() => setOpen(false)}
-          />
+          <button
+            className="text-xs border rounded px-2 py-1"
+            onClick={async () => {
+              try {
+                await logoutUser();
+              } catch {
+              } finally {
+                clearStoredSession();
+                router.replace("/signin");
+              }
+            }}
+          >
+            Logout
+          </button>
         </div>
       </div>
     </>

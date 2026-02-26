@@ -15,6 +15,7 @@ import { deleteCategory, getCategories, updateCategory } from "@/services/Catego
 import type { Category, CategoryStatus } from "./types";
 import { toast } from "react-toastify";
 import Pagination from "@/components/Pagination";
+import { getStoredSession } from "@/lib/auth";
 
 type DeleteCategoryErrorResponse = {
   requiresConfirmation?: boolean;
@@ -26,6 +27,7 @@ export default function CategoryClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewCategoryId, setViewCategoryId] = useState<number | null>(null);
   const [editCategoryId, setEditCategoryId] = useState<number | null>(null);
+  const [isAdmin] = useState(() => getStoredSession()?.role === "ADMIN");
   const queryClient = useQueryClient();
 
   const { data: categories = [], isLoading, isError, error } = useQuery({
@@ -128,7 +130,7 @@ export default function CategoryClient() {
       <div className="p-6">
         <div className="flex items-center justify-between w-full mt-6">
           <FilterWrapper activeTab={activeTab} onTabChange={setActiveTab} />
-          <CreateCategoryDialog />
+          <CreateCategoryDialog disabled={!isAdmin} />
         </div>
 
         <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -154,6 +156,7 @@ export default function CategoryClient() {
           isLoading={isLoading}
           isError={isError}
           errorMessage={(error as Error)?.message}
+          isAdmin={isAdmin}
           onView={(id) => setViewCategoryId(id)}
           onEdit={(id) => setEditCategoryId(id)}
           onPublish={(id) => publishMutation.mutate(id)}

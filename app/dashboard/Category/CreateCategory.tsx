@@ -17,7 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import upload from "@/public/Upload.svg";
 
-export default function CreateCategoryDialog() {
+type CreateCategoryDialogProps = {
+  disabled?: boolean;
+};
+
+export default function CreateCategoryDialog({ disabled = false }: CreateCategoryDialogProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -86,7 +90,7 @@ export default function CreateCategoryDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm" className="flex items-center gap-2">
+        <Button size="sm" className="flex items-center gap-2" disabled={disabled}>
           <img src={CirclePlus.src} className="h-4 w-4" />
           Create Category
         </Button>

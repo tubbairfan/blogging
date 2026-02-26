@@ -16,12 +16,15 @@ import { deleteArticle, getArticles, updateArticle } from "@/services/Articles.s
 import type { Article, ArticleStatus } from "./types";
 import { toast } from "react-toastify";
 import Pagination from "@/components/Pagination";
+import { getStoredSession } from "@/lib/auth";
 export default function ArticleClient() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewArticleId, setViewArticleId] = useState<number | null>(null);
+  const [isAdmin] = useState(() => getStoredSession()?.role === "ADMIN");
+
   const { data: articles = [], isLoading, isError, error } = useQuery({
     queryKey: ["articles"],
     queryFn: getArticles,
@@ -110,7 +113,12 @@ export default function ArticleClient() {
       <div className="p-6">
         <div className="flex items-center justify-between w-full mt-6">
           <FilterWrapper activeTab={activeTab} onTabChange={setActiveTab} />
-          <Button size="sm" className="flex items-center gap-2" onClick={() => router.push("/dashboard/article/create")}>
+          <Button
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => router.push("/dashboard/article/create")}
+            disabled={!isAdmin}
+          >
             <img src={CirclePlus.src} className="h-4 w-4" />
             Create Article
           </Button>
@@ -147,6 +155,7 @@ export default function ArticleClient() {
           isLoading={isLoading}
           isError={isError}
           errorMessage={(error as Error)?.message}
+          isAdmin={isAdmin}
           onView={(id) => setViewArticleId(id)}
           onEdit={(id) => router.push(`/dashboard/article/create?id=${id}`)}
           onPublish={(id) => publishMutation.mutate(id)}

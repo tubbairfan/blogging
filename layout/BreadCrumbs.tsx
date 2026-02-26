@@ -11,7 +11,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
    <nav
   className="
     text-sm font-medium text-[#71717A] flex items-center space-x-2
-    ml-14  md:ml-16 lg:ml-0 "
+    ml-14  md:ml-16 lg:ml-5 "
 >
   {items.map((item, index) => (
     <span key={index} className="flex items-center">

@@ -20,6 +20,7 @@ type ArticleTableProps = {
   isLoading?: boolean;
   isError?: boolean;
   errorMessage?: string;
+  isAdmin?: boolean;
   onView: (id: number) => void;
   onEdit: (id: number) => void;
   onPublish: (id: number) => void;
@@ -31,6 +32,7 @@ export default function ArticleTable({
   isLoading,
   isError,
   errorMessage,
+  isAdmin = false,
   onView,
   onEdit,
   onPublish,
@@ -88,18 +90,24 @@ export default function ArticleTable({
               <img src={Eye.src} className="h-4 w-4" />
               View
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2" onClick={() => onEdit(row.id)}>
-              <img src={FilePenLine.src} className="h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2" onClick={() => onPublish(row.id)}>
-              <img src={CircleCheck.src} className="h-4 w-4" />
-              Publish
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2" onClick={() => onDelete(row.id)}>
-              <img src={vector.src} className="h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
+            {isAdmin && (
+              <DropdownMenuItem className="flex items-center gap-2" onClick={() => onEdit(row.id)}>
+                <img src={FilePenLine.src} className="h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+            )}
+            {isAdmin && (
+              <DropdownMenuItem className="flex items-center gap-2" onClick={() => onPublish(row.id)}>
+                <img src={CircleCheck.src} className="h-4 w-4" />
+                Publish
+              </DropdownMenuItem>
+            )}
+            {isAdmin && (
+              <DropdownMenuItem className="flex items-center gap-2" onClick={() => onDelete(row.id)}>
+                <img src={vector.src} className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),

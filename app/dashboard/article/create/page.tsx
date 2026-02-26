@@ -33,6 +33,15 @@ export default function CreateArticlePage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    if (Object.keys(errors).length === 0) return;
+    const timeoutId = setTimeout(() => {
+      setErrors({});
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [errors]);
+
   const { data: articleData } = useQuery({
     queryKey: ["article", articleId],
     queryFn: () => getArticleById(articleId as number),
